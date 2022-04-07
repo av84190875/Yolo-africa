@@ -7,6 +7,10 @@ def load_image(image_file):
 	img = Image.open(image_file)
 	return img
 
+@st.cache(ttl=48*3600)
+def load_model():
+  model = torch.hub.load('yolov5','custom',path='best.pt',source='local', device='cpu',force_reload=True)
+  return model
 def main():
    # giving a title
    st.set_page_config(page_title='YOLO Classifier', page_icon='favicon.png')
@@ -24,8 +28,7 @@ def main():
    if st.button('Predict'):
      if image_file is not None:
          # To See details
-        with st.spinner('Loading Model and Image...'):
-            model = torch.hub.load('yolov5','custom',path='best.pt',source='local', device='cpu',force_reload=True)
+        model = load_model()
         file_details = {"filename":image_file.name, "filetype":image_file.type,"filesize":image_file.size}
         st.write(file_details)
         img = load_image(image_file)
